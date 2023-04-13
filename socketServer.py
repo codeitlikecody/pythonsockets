@@ -25,7 +25,7 @@ if __name__ == "__main__":
             server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
             # attempt connection to client
-            client_socket, client_ID = socket_functions.connect_client(
+            client_socket, socket_file, client_ID = socket_functions.connect_client(
                 server_socket, args.port, connected_clients)
             if client_socket == None:
                 print(f"Connection to client failed. Waiting for new connection...")
@@ -36,15 +36,15 @@ if __name__ == "__main__":
                         print(
                             f"Connection to client {client_ID} successful. Waiting for commands...")
                     while True:
-                        response = socket_functions.receive_message(
-                            client_socket)
+                        response = socket_functions.get_line(
+                            socket_file)
                         if not response:
                             break
                         # handle recieved data
 
                         response = response.strip()
                         # send response back to client
-                        socket_functions.send_message(client_socket, response)
+                        socket_functions.send_line(socket_file, response)
 
                     # Connection lost, remove client from connected clients list
                     socket_functions.disconnect_client(

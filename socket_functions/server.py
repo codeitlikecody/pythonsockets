@@ -3,6 +3,7 @@ from .common import *
 
 # initiate client connection
 def connect_client(server_socket, port, connected_clients):
+    # TODO this connects to simple client with a single character
     client_socket = None
     client_ID = None
     try:
@@ -10,49 +11,46 @@ def connect_client(server_socket, port, connected_clients):
         server_socket.bind((HOST, port))
         server_socket.listen()
         client_socket, addr = server_socket.accept()
-        print(f"Connection recieved from: {addr}")
+        print(f"Connection initiated on port: {addr[1]}")
+        socket_file = client_socket.makefile('rw')
 
         # Get client ID from client and check existing connections
-        command, client_ID = receive_message(client_socket).split(" ", 1)
+        response = "CONNECT: ERROR"
+        command, client_ID = get_line(socket_file).split(" ", 1)
         if command != "CONNECT":
-            response = "CONNECT: ERROR"
-            client_ID = None
             if PRINT_VERBOSE_STATUS:
                 print(
                     f"Error: Expected CONNECT command but recieved: {command}")
+        elif connected_clients.count(client_ID) != 0:
+            if PRINT_VERBOSE_STATUS:
+                print(
+                    f"Error: Already connected to client with ID: {client_ID}")
         else:
-            if connected_clients.count(client_ID) != 0:
-                response = "CONNECT: ERROR"
-                client_ID = None
-                if PRINT_VERBOSE_STATUS:
-                    print(
-                        f"Error: Already connected to client with ID: {client_ID}")
-            else:
-                connected_clients.append(client_ID)
-                response = "CONNECT: OK"
-                if PRINT_VERBOSE_STATUS:
-                    print(f"Connecting client with ID: {client_ID}")
+            connected_clients.append(client_ID)
+            response = "CONNECT: OK"
+            if PRINT_VERBOSE_STATUS:
+                print(f"Connecting client with ID: {client_ID}")
 
     except ValueError as ex:
-        response = "CONNECT: ERROR"
-        client_ID = None
         if PRINT_VERBOSE_STATUS:
             print(
                 f"Error: Unable to parse client command: {ex.args}")
 
+    except OSError as ex:
+        if PRINT_VERBOSE_STATUS:
+            print(
+                f"Error: Unable to connect to client: {ex.args[1]}")
+        exit()
+
     except Exception as ex:
-        response = "CONNECT: ERROR"
-        client_ID = None
         if PRINT_VERBOSE_STATUS:
             print(
                 f"Error: An {type(ex).__name__} exception occured while connecting client: {ex.args}")
 
     # send response to client
     if client_socket:
-        send_message(client_socket, response)
-    if client_ID == None:
-        return None, None
-    return client_socket, client_ID
+        send_line(socket_file, response)
+    return client_socket, socket_file, client_ID
 
 
 # remove client connection

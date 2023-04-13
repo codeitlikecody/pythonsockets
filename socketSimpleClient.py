@@ -21,13 +21,15 @@ if __name__ == "__main__":
             exit()
 
         while True:
+
+            socket_file = server_socket.makefile('rw')
             data_to_send = input("Input:").strip()
 
-            server_socket.sendall((f"{data_to_send}").encode())
-            response = server_socket.recv(RECEIVE_BUFFER_SIZE)
+            socket_functions.send_line(socket_file, f"{data_to_send}")
+            response = socket_functions.get_line(socket_file)
             if not response:
                 break
-            print(f"Received: {response.decode()}")
+            print(f"Received: {response}")
 
         print(f"Connection lost")
 

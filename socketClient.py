@@ -21,7 +21,9 @@ if __name__ == "__main__":
             print(f"Connection to {HOST}:{args.port} failed. Exiting...")
             exit()
 
-        if socket_functions.connect_server(server_socket, client_ID) == None:
+        socket_file = socket_functions.connect_server(
+            server_socket, client_ID)
+        if socket_file == None:
             print(f"Connection failed. Exiting...")
             exit()
 
@@ -34,11 +36,11 @@ if __name__ == "__main__":
 5. Manual entry (debugging only)""")
             data_to_send = input("Input:").strip()
 
-            server_socket.sendall((f"{data_to_send}").encode())
-            response = server_socket.recv(RECEIVE_BUFFER_SIZE)
+            socket_functions.send_line(socket_file, f"{data_to_send}")
+            response = socket_functions.get_line(socket_file)
             if not response:
                 break
-            print(f"Received: {response.decode()}")
+            print(f"Received: {response}")
 
         print(f"Connection lost")
 
