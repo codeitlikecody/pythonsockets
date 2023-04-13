@@ -21,30 +21,24 @@ if __name__ == '__main__':
             print(f'Connection to {HOST}:{args.port} failed. Exiting...')
             exit()
 
-        s.sendall((f'CONNECT {client_ID}').encode())
-        data = s.recv(RECEIVE_BUFFER_SIZE)
-        if data:
-            print(f'Received: {data.decode()}')
+        if socket_functions.connect_server(s, client_ID) == None:
+            print(f'Connection failed. Exiting...')
+            exit()
 
-            command = data.decode()
-            if command != 'CONNECT: OK':
-                print(f'Connection failed. Exiting...')
-                exit()
+        while True:
+            print("""
+1. PUT
+2. GET
+3. DELETE
+4. DISCONNECT
+5. Manual entry (debugging only)""")
+            data_to_send = input("Input:").strip()
 
-            while True:
-                print("""
-    1. PUT
-    2. GET
-    3. DELETE
-    4. DISCONNECT
-    5. Manual entry (debugging only)""")
-                data_to_send = input("Input:").strip()
-
-                s.sendall((f'{data_to_send}').encode())
-                data = s.recv(RECEIVE_BUFFER_SIZE)
-                if not data:
-                    break
-                print(f'Received: {data.decode()}')
+            s.sendall((f'{data_to_send}').encode())
+            response = s.recv(RECEIVE_BUFFER_SIZE)
+            if not response:
+                break
+            print(f'Received: {response.decode()}')
 
         print(f'Connection lost')
 

@@ -19,13 +19,13 @@ if __name__ == '__main__':
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((HOST, args.port))
             s.listen()
-            conn, addr = s.accept()
-            with conn:
+            s, addr = s.accept()
+            with s:
                 print(f'Connection recieved from: {addr}')
 
                 # attempt connection to client
                 client_ID = socket_functions.connect_client(
-                    conn, connected_clients)
+                    s, connected_clients)
                 if client_ID == None:
                     print(f'Connection to client failed. Waiting for new connection...')
                 else:
@@ -34,14 +34,14 @@ if __name__ == '__main__':
                         print(
                             f'Connection to client {client_ID} successful. Waiting for commands...')
                     while True:
-                        data = socket_functions.receive_message(conn)
-                        if not data:
+                        response = socket_functions.receive_message(s)
+                        if not response:
                             break
                         # handle recieved data
 
-                        response = data.strip()
+                        response = response.strip()
                         # send response back to client
-                        socket_functions.send_message(conn, response)
+                        socket_functions.send_message(s, response)
 
                     # Connection lost, remove client from connected clients list
                     socket_functions.disconnect_client(
