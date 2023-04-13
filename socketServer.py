@@ -14,9 +14,15 @@ if __name__ == "__main__":
     args = parser.parse_args()
     connected_clients = []
 
+    # define and close socket to reset it if server didn't close properly last time
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+        server_socket.close()
+
     print(f"Listening on: {HOST}:{args.port}")
     while True:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+
+            server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
             # attempt connection to client
             client_socket, client_ID = socket_functions.connect_client(
@@ -43,4 +49,4 @@ if __name__ == "__main__":
                     # Connection lost, remove client from connected clients list
                     socket_functions.disconnect_client(
                         connected_clients, client_ID)
-        print(f"Connection lost. Waiting for new connection...")
+                    print(f"Connection lost. Waiting for new connection...")

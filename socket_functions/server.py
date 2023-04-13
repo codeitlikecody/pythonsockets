@@ -3,6 +3,8 @@ from .common import *
 
 # initiate client connection
 def connect_client(server_socket, port, connected_clients):
+    client_socket = None
+    client_ID = None
     try:
         # attempt connection to client
         server_socket.bind((HOST, port))
@@ -31,15 +33,25 @@ def connect_client(server_socket, port, connected_clients):
                 if PRINT_VERBOSE_STATUS:
                     print(f"Connecting client with ID: {client_ID}")
 
-    except:
+    except ValueError as ex:
         response = "CONNECT: ERROR"
         client_ID = None
         if PRINT_VERBOSE_STATUS:
             print(
-                f"Error: Unknown error occured while connecting client")
+                f"Error: Unable to parse client command: {ex.args}")
+
+    except Exception as ex:
+        response = "CONNECT: ERROR"
+        client_ID = None
+        if PRINT_VERBOSE_STATUS:
+            print(
+                f"Error: An {type(ex).__name__} exception occured while connecting client: {ex.args}")
 
     # send response to client
-    send_message(client_socket, response)
+    if client_socket:
+        send_message(client_socket, response)
+    if client_ID == None:
+        return None, None
     return client_socket, client_ID
 
 
