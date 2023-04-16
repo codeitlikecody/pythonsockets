@@ -5,7 +5,6 @@ from socket_functions.constants import *
 
 if __name__ == "__main__":
     print(f"Client Started")
-    client_ID = input("Please enter client ID: ").strip()
 
     # get port from args
     parser = argparse.ArgumentParser("socketClient")
@@ -19,7 +18,7 @@ if __name__ == "__main__":
         try:
             server_socket.connect((HOST, args.port))
             socket_file = socket_functions.connect_server(
-                server_socket, client_ID)
+                server_socket)
         except:
             socket_file = None
 

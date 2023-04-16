@@ -1,13 +1,12 @@
 from .common import *
-import time
 
 
 # initiate server connection
-def connect_server(connected_socket, client_ID):
+def connect_server(connected_socket):
 
     try:
         # Send client ID to server
-
+        client_ID = input("Please enter client ID: ").strip()
         socket_file = connected_socket.makefile('rw')
         send_line(socket_file, (f"CONNECT {client_ID}"))
         response = get_line(socket_file)
