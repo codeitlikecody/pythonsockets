@@ -5,7 +5,6 @@ from .common import *
 def connect_client(server_socket, port, connected_clients):
     # TODO this connects to simple client with a single character
     client_socket = None
-    client_ID = None
     try:
         # attempt connection to client
         server_socket.bind((HOST, port))
@@ -18,10 +17,12 @@ def connect_client(server_socket, port, connected_clients):
         response = "CONNECT: ERROR"
         command, client_ID = get_line(socket_file).split(" ", 1)
         if command != "CONNECT":
+            client_ID = None
             if PRINT_VERBOSE_STATUS:
                 print(
                     f"Error: Expected CONNECT command but recieved: {command}")
         elif connected_clients.count(client_ID) != 0:
+            client_ID = None
             if PRINT_VERBOSE_STATUS:
                 print(
                     f"Error: Already connected to client with ID: {client_ID}")
@@ -32,17 +33,20 @@ def connect_client(server_socket, port, connected_clients):
                 print(f"Connecting client with ID: {client_ID}")
 
     except ValueError as ex:
+        client_ID = None
         if PRINT_VERBOSE_STATUS:
             print(
                 f"Error: Unable to parse client command: {ex.args}")
 
     except OSError as ex:
+        client_ID = None
         if PRINT_VERBOSE_STATUS:
             print(
                 f"Error: Unable to connect to client: {ex.args[1]}")
         exit()
 
     except Exception as ex:
+        client_ID = None
         if PRINT_VERBOSE_STATUS:
             print(
                 f"Error: An {type(ex).__name__} exception occured while connecting client: {ex.args}")
@@ -64,3 +68,27 @@ def disconnect_client(connected_clients, client_ID):
         if PRINT_VERBOSE_STATUS:
             print(
                 f"Error: Could not remove client connection record")
+
+
+# receive a command/key pair from the connected client
+def parse_response(response):
+    try:
+        command, key = response.split(" ", 1)
+        if PRINT_VERBOSE_STATUS:
+            print(
+                f"Recieved Command: {command} Key: {key}")
+        return command.strip(), key.strip()
+
+    # A Command was recieved but no key, just return the key as None
+    except ValueError as ex:
+        if PRINT_VERBOSE_STATUS:
+            print(
+                f"Command and Key pair was not recieved: {response}")
+        return response.strip(), None
+
+    # Report and handle other parsing errors
+    except Exception as ex:
+        if PRINT_VERBOSE_STATUS:
+            print(
+                f"Error: An {type(ex).__name__} exception occured while parsing line: {ex.args}")
+        return response.strip(), None

@@ -5,6 +5,7 @@ from .constants import *
 def send_line(socket_file, message):
     try:
         socket_file.write((f"{message}\n"))
+        # flush buffer and send data now
         socket_file.flush()
         if PRINT_SENT_COMMANDS:
             print(f"Sent: {message.strip()}")
