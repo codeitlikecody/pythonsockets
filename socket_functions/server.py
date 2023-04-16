@@ -76,14 +76,14 @@ def parse_response(response):
         command, key = response.split(" ", 1)
         if PRINT_VERBOSE_STATUS:
             print(
-                f"Recieved Command: {command} Key: {key}")
+                f"Command: {command} Key: {key}")
         return command.strip(), key.strip()
 
     # A command was recieved but no key, just return the key as None
     except ValueError as ex:
         if PRINT_VERBOSE_STATUS:
             print(
-                f"Recieved Command: {response}")
+                f"Command: {response}")
         return response.strip(), None
 
     # Report and handle other parsing errors
@@ -92,3 +92,31 @@ def parse_response(response):
             print(
                 f"Error: An {type(ex).__name__} exception occured while parsing line: {ex.args}")
         return response.strip(), None
+
+
+# handle a PUT message from client
+def put(key, value, database):
+    # check for valid key and value
+    if key == None or value == None:
+        return "PUT: ERROR"
+
+    # update database
+    database[key] = value
+    if PRINT_VERBOSE_STATUS:
+        print(f"PUT '{key}': '{value}'")
+    return "PUT: OK"
+
+
+# handle a GET message from client
+def get(key, database):
+    try:
+        # get value from database
+        value = database[key]
+        if PRINT_VERBOSE_STATUS:
+            print(f"GET '{key}': '{value}'")
+        return f"GET {value}"
+    except:
+        # key not found
+        if PRINT_VERBOSE_STATUS:
+            print(f"Error: could not GET '{key}', key not found")
+        return "GET: ERROR"

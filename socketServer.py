@@ -12,7 +12,10 @@ if __name__ == "__main__":
     parser.add_argument(
         "port", help="Port number for incoming connections", type=int, nargs="?", default=DEFAULT_PORT)
     args = parser.parse_args()
+
+    # initialize variables
     connected_clients = []
+    database = {}
 
     # define and close socket to reset it if server didn't close properly last time
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
@@ -45,11 +48,13 @@ if __name__ == "__main__":
                         command, key = socket_functions.parse_response(
                             response)
                         if command == "PUT":
-                            # TODO: handle PUT command
-                            response = "PUT: OK"
+                            value = socket_functions.get_line(socket_file)
+                            response = socket_functions.put(
+                                key, value, database)
                         elif command == "GET":
                             # TODO: handle GET command
-                            response = "GET: OK"
+                            response = socket_functions.get(
+                                key, database)
                         elif command == "DELETE":
                             # TODO: handle DELETE command
                             response = "DELETE: OK"
