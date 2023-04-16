@@ -7,6 +7,7 @@ if __name__ == "__main__":
     print(f"Client Started")
 
     # get port from args
+    # TODO: add option to specify host
     parser = argparse.ArgumentParser("socketClient")
     parser.add_argument(
         "port", help="Port number for outgoing connections", type=int, nargs="?", default=DEFAULT_PORT)

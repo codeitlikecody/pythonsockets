@@ -58,7 +58,6 @@ if __name__ == "__main__":
                             response = socket_functions.delete(
                                 key, database)
                         elif command == "DISCONNECT":
-                            # TODO: handle DISCONNECT command
                             response = "DISCONNECT: OK"
                             connected = False
                         else:
