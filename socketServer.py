@@ -32,10 +32,11 @@ if __name__ == "__main__":
             else:
                 with client_socket:
                     # Connection established, start main loop
+                    connected = True
                     if PRINT_VERBOSE_STATUS:
                         print(
                             f"Connection to client {client_ID} successful. Waiting for commands...")
-                    while True:
+                    while connected:
                         response = socket_functions.get_line(
                             socket_file)
                         if not response:
@@ -45,17 +46,19 @@ if __name__ == "__main__":
                             response)
                         if command == "PUT":
                             # TODO: handle PUT command
-                            pass
+                            response = "PUT: OK"
                         elif command == "GET":
                             # TODO: handle GET command
-                            pass
+                            response = "GET: OK"
                         elif command == "DELETE":
                             # TODO: handle DELETE command
-                            pass
+                            response = "DELETE: OK"
                         elif command == "DISCONNECT":
                             # TODO: handle DISCONNECT command
-                            break
+                            response = "DISCONNECT: OK"
+                            connected = False
                         else:
+                            connected = False
                             if PRINT_VERBOSE_STATUS:
                                 print(
                                     f"Error: Unknown command recieved: {command}")
@@ -68,4 +71,6 @@ if __name__ == "__main__":
                     socket_functions.disconnect_client(
                         connected_clients, client_ID)
                     # TODO: try to gracefully close connection with client
+                    client_socket.shutdown(socket.SHUT_RDWR)
+                    client_socket.close()
                     print(f"Connection lost. Waiting for new connection...")

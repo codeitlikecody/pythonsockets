@@ -79,11 +79,11 @@ def parse_response(response):
                 f"Recieved Command: {command} Key: {key}")
         return command.strip(), key.strip()
 
-    # A Command was recieved but no key, just return the key as None
+    # A command was recieved but no key, just return the key as None
     except ValueError as ex:
         if PRINT_VERBOSE_STATUS:
             print(
-                f"Command and Key pair was not recieved: {response}")
+                f"Recieved Command: {response}")
         return response.strip(), None
 
     # Report and handle other parsing errors
