@@ -52,12 +52,11 @@ if __name__ == "__main__":
                             response = socket_functions.put(
                                 key, value, database)
                         elif command == "GET":
-                            # TODO: handle GET command
                             response = socket_functions.get(
                                 key, database)
                         elif command == "DELETE":
-                            # TODO: handle DELETE command
-                            response = "DELETE: OK"
+                            response = socket_functions.delete(
+                                key, database)
                         elif command == "DISCONNECT":
                             # TODO: handle DISCONNECT command
                             response = "DISCONNECT: OK"

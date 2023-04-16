@@ -120,3 +120,18 @@ def get(key, database):
         if PRINT_VERBOSE_STATUS:
             print(f"Error: could not GET '{key}', key not found")
         return "GET: ERROR"
+
+
+# handle a DELETE message from client
+def delete(key, database):
+    try:
+        # delete value from database
+        database.pop(key)
+        if PRINT_VERBOSE_STATUS:
+            print(f"DELETE '{key}'")
+        return "DELETE: OK"
+    except:
+        # key not found
+        if PRINT_VERBOSE_STATUS:
+            print(f"Error: could not DELETE '{key}', key not found")
+        return "DELETE: ERROR"
