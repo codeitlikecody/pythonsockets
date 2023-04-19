@@ -10,14 +10,19 @@ if __name__ == "__main__":
     # TODO: add option to specify host
     parser = argparse.ArgumentParser("socketClient")
     parser.add_argument(
-        "port", help="Port number for outgoing connections", type=int, nargs="?", default=DEFAULT_PORT)
+        "host", help=f"Host name for outgoing connections. Default: {HOST}", type=str, nargs="?", default=HOST)
+    parser.add_argument(
+        "port", help=f"Port number for outgoing connections. Default: {DEFAULT_PORT}", type=int, nargs="?", default=DEFAULT_PORT)
     args = parser.parse_args()
 
     # Connect to server
-    print(f"Attempting connection to: {HOST}:{args.port}")
+    hostIP = socket.gethostbyname(args.host)
+    print(
+        f"Attempting connection to: {args.host}:{args.port} -> {hostIP}:{args.port}")
+
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
         try:
-            server_socket.connect((HOST, args.port))
+            server_socket.connect((hostIP, args.port))
             socket_file = socket_functions.connect_server(
                 server_socket)
         except:
