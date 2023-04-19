@@ -47,14 +47,14 @@ if __name__ == "__main__":
                         # handle recieved data
                         command, key = socket_functions.parse_response(
                             response)
-                        if command == "PUT":
+                        if command == "PUT" and key:
                             value = socket_functions.get_line(socket_file)
                             response = socket_functions.put(
                                 key, value, database)
-                        elif command == "GET":
+                        elif command == "GET" and key:
                             response = socket_functions.get(
                                 key, database)
-                        elif command == "DELETE":
+                        elif command == "DELETE" and key:
                             response = socket_functions.delete(
                                 key, database)
                         elif command == "DISCONNECT":
@@ -64,7 +64,7 @@ if __name__ == "__main__":
                             connected = False
                             if PRINT_VERBOSE_STATUS:
                                 print(
-                                    f"Error: Unknown command recieved: {command}")
+                                    f"Error: Unknown or incorrectly formed command recieved: {command}")
                             break
 
                         # send response back to client
@@ -73,7 +73,8 @@ if __name__ == "__main__":
                     # Connection lost, remove client from connected clients list
                     socket_functions.disconnect_client(
                         connected_clients, client_ID)
-                    # TODO: try to gracefully close connection with client
+
+                    # try to gracefully close connection with client
                     client_socket.shutdown(socket.SHUT_RDWR)
                     client_socket.close()
                     print(f"Connection lost. Waiting for new connection...")
