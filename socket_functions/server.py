@@ -3,7 +3,6 @@ from .common import *
 
 # initiate client connection
 def connect_client(server_socket, port, connected_clients):
-    # TODO this connects to simple client with a single character
     client_socket = None
     try:
         # attempt connection to client
