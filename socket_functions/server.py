@@ -68,32 +68,9 @@ def disconnect_client(connected_clients, client_ID):
             print(
                 f"Error: Could not remove client connection record")
 
-
-# receive a command/key pair from the connected client
-def parse_response(response):
-    try:
-        command, key = response.split(" ", 1)
-        if PRINT_VERBOSE_STATUS:
-            print(
-                f"Command: {command} Key: {key}")
-        return command.strip(), key.strip()
-
-    # A command was recieved but no key, just return the key as None
-    except ValueError as ex:
-        if PRINT_VERBOSE_STATUS:
-            print(
-                f"Command: {response}")
-        return response.strip(), None
-
-    # Report and handle other parsing errors
-    except Exception as ex:
-        if PRINT_VERBOSE_STATUS:
-            print(
-                f"Error: An {type(ex).__name__} exception occured while parsing line: {ex.args}")
-        return response.strip(), None
-
-
 # handle a PUT message from client
+
+
 def put(key, value, database):
     # check for valid key and value
     if key == None or value == None:

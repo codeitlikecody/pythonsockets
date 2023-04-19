@@ -31,3 +31,27 @@ def get_line(socket_file):
             print(
                 f"Error: An {type(ex).__name__} exception occured while reading line: {ex.args}")
         return None
+
+
+# receive a command/key pair from the connected client
+def parse_response(response):
+    try:
+        command, key = response.split(" ", 1)
+        if PRINT_VERBOSE_STATUS:
+            print(
+                f"Command: {command} Key: {key}")
+        return command.strip(), key.strip()
+
+    # A command was recieved but no key, just return the key as None
+    except ValueError as ex:
+        if PRINT_VERBOSE_STATUS:
+            print(
+                f"Command: {response}")
+        return response.strip(), None
+
+    # Report and handle other parsing errors
+    except Exception as ex:
+        if PRINT_VERBOSE_STATUS:
+            print(
+                f"Error: An {type(ex).__name__} exception occured while parsing line: {ex.args}")
+        return response.strip(), None

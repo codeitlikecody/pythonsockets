@@ -44,36 +44,44 @@ if __name__ == "__main__":
 3. DELETE
 4. DISCONNECT""")
                     if DEBUG:
-                        print("5. Manual entry")
+                        print("5. Manual Command")
 
                     selected_option = input("Input: ").strip()
 
                     # Send command to server, prompting user for any keys or data
                     if selected_option == "1":
-                        data_to_send = f"PUT {input('Key: ').strip()}\n{input('Data: ').strip()}"
+                        data_to_send = f"PUT {input('PUT Key: ').strip()}\n{input('PUT Data: ').strip()}"
                     elif selected_option == "2":
-                        data_to_send = f"GET {input('Key: ').strip()}"
+                        data_to_send = f"GET {input('GET Key: ').strip()}"
                     elif selected_option == "3":
-                        data_to_send = f"DELETE {input('Key: ').strip()}"
+                        data_to_send = f"DELETE {input('DELETE Key: ').strip()}"
                     elif selected_option == "4":
                         data_to_send = "DISCONNECT"
                     elif selected_option == "5" and DEBUG:
-                        data_to_send = input("Input: ").strip()
+                        data_to_send = input("Manual Command: ").strip()
                     else:
                         print(f"Invalid option")
                         continue
 
                     socket_functions.send_line(socket_file, f"{data_to_send}")
 
-                    # get and parse response from server
+                    # get and parse response from the server
                     response = socket_functions.get_line(socket_file)
+                    command, status = socket_functions.parse_response(
+                        response)
                     if not response:
                         print(f"No response from server")
                         break
                     elif response == "DISCONNECT: OK":
                         print(f"Disconnected from server")
                         break
+                    elif response == "PUT: ERROR" or response == "GET: ERROR" or response == "DELETE: ERROR":
+                        print(f"Error completing command.")
+                    elif response == "PUT: OK" or response == "DELETE: OK" or (command == "GET" and status):
+                        print(f"Command completed successfully.")
                     else:
-                        print(f"Server response: {response}")
+                        print(
+                            f"Unexpected response recieved. Quitting...")
+                        break
 
     print(f"Exiting...")
