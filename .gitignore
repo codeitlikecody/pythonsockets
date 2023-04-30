@@ -1,4 +1,7 @@
 # gitignore template based on https://github.com/github/gitignore/blob/main/Python.gitignore
+#vscode settings
+.vscode
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
