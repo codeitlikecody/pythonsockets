@@ -44,7 +44,7 @@ if __name__ == "__main__":
                             socket_file)
                         if not response:
                             break
-                        # handle recieved data
+                        # handle received data
                         command, key = socket_functions.parse_response(
                             response)
                         if command == "PUT" and key:
@@ -64,7 +64,7 @@ if __name__ == "__main__":
                             connected = False
                             if PRINT_VERBOSE_STATUS:
                                 print(
-                                    f"Error: Unknown or incorrectly formed command recieved: {command}")
+                                    f"Error: Unknown or incorrectly formed command received: {command}")
                             break
 
                         # send response back to client

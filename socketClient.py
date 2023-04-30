@@ -82,7 +82,7 @@ if __name__ == "__main__":
                             print(f"Command completed successfully.")
                     else:
                         print(
-                            f"Unexpected response recieved. Quitting...")
+                            f"Unexpected response received. Quitting...")
                         break
 
     print(f"Exiting...")
