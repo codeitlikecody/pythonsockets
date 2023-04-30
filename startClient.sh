@@ -1,1 +1,1 @@
-python socketClient.py $1 $2
+python3 socketClient.py $1 $2

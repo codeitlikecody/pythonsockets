@@ -77,7 +77,7 @@ if __name__ == "__main__":
                     elif response == "PUT: ERROR" or response == "GET: ERROR" or response == "DELETE: ERROR":
                         print(f"Error completing command.")
                     elif response == "PUT: OK" or response == "DELETE: OK" or (command == "GET" and status):
-                        if args.verbose:
+                        if PRINT_VERBOSE_STATUS:
                             print(f"Command completed successfully.")
                     else:
                         print(
