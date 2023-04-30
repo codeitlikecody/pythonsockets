@@ -12,7 +12,7 @@ def send_line(socket_file, message):
     except Exception as ex:
         if PRINT_VERBOSE_STATUS:
             print(
-                f"Error: An {type(ex).__name__} exception occured while sending line: {ex.args}")
+                f"Error: An {type(ex).__name__} exception occurred while sending line: {ex.args}")
         return None
 
 
@@ -29,7 +29,7 @@ def get_line(socket_file):
     except Exception as ex:
         if PRINT_VERBOSE_STATUS:
             print(
-                f"Error: An {type(ex).__name__} exception occured while reading line: {ex.args}")
+                f"Error: An {type(ex).__name__} exception occurred while reading line: {ex.args}")
         return None
 
 
@@ -42,7 +42,7 @@ def parse_response(response):
                 f"Command: {command} Key: {key}")
         return command.strip(), key.strip()
 
-    # A command was recieved but no key, just return the key as None
+    # A command was received but no key, just return the key as None
     except ValueError as ex:
         if PRINT_VERBOSE_STATUS:
             print(
@@ -53,5 +53,5 @@ def parse_response(response):
     except Exception as ex:
         if PRINT_VERBOSE_STATUS:
             print(
-                f"Error: An {type(ex).__name__} exception occured while parsing line: {ex.args}")
+                f"Error: An {type(ex).__name__} exception occurred while parsing line: {ex.args}")
         return response.strip(), None

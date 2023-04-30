@@ -12,7 +12,7 @@ def connect_server(connected_socket):
         response = get_line(socket_file)
         if response != "CONNECT: OK":
             print(
-                f"Error: Expected 'CONNECT: OK' reponse from server but recieved: {response}")
+                f"Error: Expected 'CONNECT: OK' response from server but received: {response}")
             return None
 
     except:

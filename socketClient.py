@@ -7,7 +7,6 @@ if __name__ == "__main__":
     print(f"Client Started")
 
     # get port from args
-    # TODO: add option to specify host
     parser = argparse.ArgumentParser("socketClient")
     parser.add_argument(
         "host", help=f"Host name for outgoing connections. Default: {HOST}", type=str, nargs="?", default=HOST)
@@ -78,7 +77,7 @@ if __name__ == "__main__":
                     elif response == "PUT: ERROR" or response == "GET: ERROR" or response == "DELETE: ERROR":
                         print(f"Error completing command.")
                     elif response == "PUT: OK" or response == "DELETE: OK" or (command == "GET" and status):
-                        if PRINT_VERBOSE_STATUS:
+                        if args.verbose:
                             print(f"Command completed successfully.")
                     else:
                         print(

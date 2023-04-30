@@ -19,7 +19,7 @@ def connect_client(server_socket, port, connected_clients):
             client_ID = None
             if PRINT_VERBOSE_STATUS:
                 print(
-                    f"Error: Expected CONNECT command but recieved: {command}")
+                    f"Error: Expected CONNECT command but received: {command}")
         elif connected_clients.count(client_ID) != 0:
             client_ID = None
             if PRINT_VERBOSE_STATUS:
@@ -48,7 +48,7 @@ def connect_client(server_socket, port, connected_clients):
         client_ID = None
         if PRINT_VERBOSE_STATUS:
             print(
-                f"Error: An {type(ex).__name__} exception occured while connecting client: {ex.args}")
+                f"Error: An {type(ex).__name__} exception occurred while connecting client: {ex.args}")
 
     # send response to client
     if client_socket:

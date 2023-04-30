@@ -36,7 +36,7 @@ if __name__ == "__main__":
                 with client_socket:
                     # Connection established, start main loop
                     connected = True
-                    if PRINT_VERBOSE_STATUS:
+                    if args.verbose:
                         print(
                             f"Connection to client {client_ID} successful. Waiting for commands...")
                     while connected:
@@ -62,7 +62,7 @@ if __name__ == "__main__":
                             connected = False
                         else:
                             connected = False
-                            if PRINT_VERBOSE_STATUS:
+                            if args.verbose:
                                 print(
                                     f"Error: Unknown or incorrectly formed command received: {command}")
                             break
