@@ -1,6 +1,8 @@
 import socket
 import argparse
 import socket_functions
+import rsa
+
 from socket_functions.constants import *
 
 
@@ -26,29 +28,36 @@ if __name__ == "__main__":
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
 
             server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            # Generate keys and exchange public key with client
+            publicKey, privateKey = rsa.newkeys(512)
 
             # attempt connection to client
-            client_socket, socket_file, client_ID = socket_functions.connect_client(
-                server_socket, args.port, connected_clients)
+            client_socket, client_ID, clientPublicKey = socket_functions.connect_client(
+                server_socket, args.port, connected_clients, publicKey, privateKey)
             if client_ID == None:
                 print(f"Connection to client failed. Waiting for new connection...")
             else:
                 with client_socket:
-                    # Connection established, start main loop
+                    # Connection established
                     connected = True
                     if PRINT_VERBOSE_STATUS:
                         print(
-                            f"Connection to client {client_ID} successful. Waiting for commands...")
+                            f"Connection to client {client_ID} successful.")    
+                 
+                    # Secure connection established, start main loop
+                    if PRINT_VERBOSE_STATUS:
+                        print(
+                            f"Connection secured. Waiting for commands...")
                     while connected:
                         response = socket_functions.get_line(
-                            socket_file)
+                            client_socket, privateKey)
                         if not response:
                             break
                         # handle received data
                         command, key = socket_functions.parse_response(
                             response)
                         if command == "PUT" and key:
-                            value = socket_functions.get_line(socket_file)
+                            key, value = key.split("\n")
                             response = socket_functions.put(
                                 key, value, database)
                         elif command == "GET" and key:
@@ -68,7 +77,7 @@ if __name__ == "__main__":
                             break
 
                         # send response back to client
-                        socket_functions.send_line(socket_file, response)
+                        socket_functions.send_line(client_socket, response, clientPublicKey)
 
                     # Connection lost, remove client from connected clients list
                     socket_functions.disconnect_client(

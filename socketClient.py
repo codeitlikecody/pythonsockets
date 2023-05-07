@@ -1,6 +1,8 @@
 import socket
 import argparse
 import socket_functions
+import rsa
+
 from socket_functions.constants import *
 
 if __name__ == "__main__":
@@ -22,17 +24,24 @@ if __name__ == "__main__":
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
         try:
             server_socket.connect((hostIP, args.port))
-            socket_file = socket_functions.connect_server(
-                server_socket)
-        except:
-            socket_file = None
 
-        if socket_file == None:
+            # Generate keys
+            publicKey, privateKey = rsa.newkeys(512)
+
+            # Attempt connection to server
+            serverPublicKey = socket_functions.connect_server(
+                server_socket, publicKey, privateKey)
+        except:
+            serverPublicKey = None
+
+        if serverPublicKey == None:
             print(f"Connection failed. Exiting...")
             exit()
         else:
+
             # Server connected, start main loop
-            print(f"Connection established")
+            print(f"Secure connection established")
+            
             with server_socket:
                 while True:
 
@@ -62,10 +71,10 @@ if __name__ == "__main__":
                         print(f"Invalid option")
                         continue
 
-                    socket_functions.send_line(socket_file, f"{data_to_send}")
+                    socket_functions.send_line(server_socket, f"{data_to_send}", serverPublicKey)
 
                     # get and parse response from the server
-                    response = socket_functions.get_line(socket_file)
+                    response = socket_functions.get_line(server_socket, privateKey)
                     command, status = socket_functions.parse_response(
                         response)
                     if not response:

@@ -1,12 +1,15 @@
+import rsa
 from .constants import *
 
 
 # send message to connected server or client
-def send_line(socket_file, message):
+def send_line(connected_socket, message, publicKey):
     try:
-        socket_file.write((f"{message}\n"))
+        encMessage = rsa.encrypt(message.encode(),
+                         publicKey)
+        connected_socket.send(encMessage)
         # flush buffer and send data now
-        socket_file.flush()
+        # connected_socket.flush()
         if PRINT_SENT_COMMANDS:
             print(f"Sent: {message.strip()}")
     except Exception as ex:
@@ -17,13 +20,14 @@ def send_line(socket_file, message):
 
 
 # receive message from connected server or client
-def get_line(socket_file):
+def get_line(connected_socket, privateKey):
     try:
-        data = socket_file.readline().strip()
+        data = connected_socket.recv(RECEIVE_BUFFER_SIZE)
         if data:
+            decMessage = rsa.decrypt(data, privateKey).decode()
             if PRINT_RECEIVED_COMMANDS:
-                print(f"Received: {data}")
-            return data
+                print(f"Received: {decMessage}")
+            return decMessage
         else:
             return None
     except Exception as ex:
