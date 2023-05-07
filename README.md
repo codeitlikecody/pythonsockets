@@ -11,7 +11,10 @@ For details of the security issues with v1 of this protocol, how they were mitig
 ## Installation
 Ensure you have the latest version of Python 3 installed on your machine. This should already be installed on turing but if you plan to run the client or server on another machine, Python 3 can be downloaded from https://www.python.org/downloads/
 
-This script doesn't use any additional libraries, so no additional installation is required.
+This script requires the python rsa library which is already installed on turing. To install this library on another machine, please run the following command:
+```bash
+pip install rsa
+```
 
 ## Running the server and client
 ### Using the shell script
