@@ -8,6 +8,15 @@ For details of the protocol, see the [protocol description](protocol.pdf).
 
 ## Security features
 For details of the security issues with v1 of this protocol, how they were mitigated and the security features of v2, see the [security features](security.pdf).
+
+## Test user accounts
+The following user accounts can be used for testing:
+Client id: abc
+Password: 123
+
+Client id: admin
+Password: 7(a6fm^YnfPC<$5Y
+
 ## Installation
 Ensure you have the latest version of Python 3 installed on your machine. This should already be installed on turing but if you plan to run the client or server on another machine, Python 3 can be downloaded from https://www.python.org/downloads/
 
@@ -41,6 +50,9 @@ chmod +x startClient.sh
 ./startClient.sh
 ```
 4. The client should now be running and attempt to connect to the server on 127.0.0.1:4242.
+5. The test client login details can be used for testing:
+        Client id: abc
+        Password: 123
 
 ### Using the python scripts
 #### Server
@@ -58,6 +70,9 @@ python socketServer.py
 python socketClient.py 
  ```
 3. The client should now be running and attempt to connect to the server on 127.0.0.1:4242.
+5. The test client login details can be used for testing:
+        Client id: abc
+        Password: 123
 
 
 ### Options for the server and client

@@ -12,9 +12,9 @@ openSSL is another option for encrypting communications that prevents the open e
 ## Client Authentication
 The original protocol did not require any client authentication. The client sent an ID to the server and was instantly connected. 
 
-In the new version of the protocol, a client ID and password are are required on connection. The server confirms that the user exists in the database and that the password matches before a connection is established. Passwords are stored hashed (not in plaintext) and are hashed by the client prior to sending. For simplicity, the user database is hardcoded in this project, but this is a very bad idea for production code. 
+In the new version of the protocol, a client ID and password are are required for connection. The server confirms that the client id exists in the user database and that the password matches before a connection is established. Passwords are hashed before storage/transmission (not in plaintext). For simplicity, the user database is hardcoded in this project, but this is a very bad idea for production code. Also, this implementation is limited to the two hardcoded users. New users can not be added, removed or passwords changed.
 
-In a production situation, I would recommend use of an authentication package/library to minimise any risk of introducing security issues into the user authentication system. A library can also manage secure storage of the user database, adding new users, password changes, use of MFA etc... As these libraries add significant additional complexity, I have not used on in this project. 
+In a production situation, I would recommend use of an authentication package/library to minimise any risk of introducing security issues via the user authentication system. A library can also manage secure storage of the user database, adding new users, password changes, use of MFA etc... As these libraries can add significant additional complexity, I have not used them on in this project. The two hardcoded used are sufficient for demonstrating basic password authentication.
 
 ## Corrupted or intercepted data
 
