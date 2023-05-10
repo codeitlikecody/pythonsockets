@@ -1,4 +1,4 @@
-import rsa 
+import rsa
 from .common import *
 
 # for testing purposes, the following extremely secure client ID and passwords are active:
@@ -6,10 +6,13 @@ from .common import *
 # abc -> 123
 
 
-users = {("admin", b'uQ\xab\xf6Q\x19\xbd(\xe5\xa8\xc2\xca\x7f\xaey\xd1\xa9\x87\x97\x15\xf9i\x17\x05W>\xe9\xb8wZ\x8b\x11'), ("abc", b'g\xf8F4\xe6G]\x90\xc4\xa9\x8c%\xe2\xe7\x1ay<\x87\xdc=K*\xf5n\xdf\xfcG:u@:\xea')}
+users = {("admin", b'uQ\xab\xf6Q\x19\xbd(\xe5\xa8\xc2\xca\x7f\xaey\xd1\xa9\x87\x97\x15\xf9i\x17\x05W>\xe9\xb8wZ\x8b\x11'),
+         ("abc", b'g\xf8F4\xe6G]\x90\xc4\xa9\x8c%\xe2\xe7\x1ay<\x87\xdc=K*\xf5n\xdf\xfcG:u@:\xea')}
 
 # initiate client connection
-def connect_client(server_socket, port, connected_clients, publicKey, privateKey):
+
+
+def connect_client(server_socket, port, connected_clients):
     client_socket = None
     try:
         # attempt connection to client
@@ -18,23 +21,19 @@ def connect_client(server_socket, port, connected_clients, publicKey, privateKey
         client_socket, addr = server_socket.accept()
         print(f"Connection initiated on port: {addr[1]}")
 
-        # Exchange public keys with client
-        clientPublicKey = rsa.PublicKey.load_pkcs1(client_socket.recv(RECEIVE_BUFFER_SIZE))
-        client_socket.send(publicKey.save_pkcs1("PEM"))
-        
         # Get client ID and hashed password
         response = "CONNECT: ERROR"
-        command, client_ID = get_line(client_socket, privateKey).split(" ", 1)
-        client_password = client_socket.recv(RECEIVE_BUFFER_SIZE)
+        command, client_ID = get_line(client_socket).split(" ", 1)
+        client_password = client_socket.recv(PASS_HASH_SIZE)
 
         # Check for valid command
         if command != "CONNECT":
-             
+
             client_ID = None
             if PRINT_VERBOSE_STATUS:
                 print(
                     f"Error: Expected CONNECT command but received: {command}")
-                
+
         # check for existing connection from this client
         elif connected_clients.count(client_ID) != 0:
             client_ID = None
@@ -52,8 +51,8 @@ def connect_client(server_socket, port, connected_clients, publicKey, privateKey
                     break
             else:
                 if PRINT_VERBOSE_STATUS:
-                    print(f"Error client with ID: {client_ID}. No matching user/password")
-                
+                    print(
+                        f"Error client with ID: {client_ID}. No matching user/password")
 
     except ValueError as ex:
         client_ID = None
@@ -76,8 +75,8 @@ def connect_client(server_socket, port, connected_clients, publicKey, privateKey
 
     # send response to client
     if client_socket:
-        send_line(client_socket, response, clientPublicKey)
-    return client_socket, client_ID, clientPublicKey
+        send_line(client_socket, response)
+    return client_socket, client_ID
 
 
 # remove client connection

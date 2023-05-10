@@ -2,6 +2,7 @@ import socket
 import argparse
 import socket_functions
 import rsa
+import ssl
 
 from socket_functions.constants import *
 
@@ -23,26 +24,31 @@ if __name__ == "__main__":
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
         try:
-            server_socket.connect((hostIP, args.port))
+            sslSettings = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+            sslSettings.load_verify_locations("./certs/server-certificate.pem")
+            sslSettings.check_hostname = False
+            secure_server_socket = ssl.SSLContext.wrap_socket(
+                sslSettings, server_socket, server_side=False, server_hostname=hostIP)
 
-            # Generate keys
-            publicKey, privateKey = rsa.newkeys(512)
+            secure_server_socket.connect((hostIP, args.port))
 
             # Attempt connection to server
-            serverPublicKey = socket_functions.connect_server(
-                server_socket, publicKey, privateKey)
-        except:
-            serverPublicKey = None
+            server_response = socket_functions.connect_server(
+                secure_server_socket)
+        except Exception as ex:
+            print(
+                f"Error: An {type(ex).__name__} exception occurred while connecting to server: {ex.args}")
+            server_response = None
 
-        if serverPublicKey == None:
+        if server_response == None:
             print(f"Connection failed. Exiting...")
             exit()
         else:
 
             # Server connected, start main loop
             print(f"Secure connection established")
-            
-            with server_socket:
+
+            with secure_server_socket:
                 while True:
 
                     # Prompt user for command
@@ -71,10 +77,12 @@ if __name__ == "__main__":
                         print(f"Invalid option")
                         continue
 
-                    socket_functions.send_line(server_socket, f"{data_to_send}", serverPublicKey)
+                    socket_functions.send_line(
+                        secure_server_socket, f"{data_to_send}")
 
                     # get and parse response from the server
-                    response = socket_functions.get_line(server_socket, privateKey)
+                    response = socket_functions.get_line(
+                        secure_server_socket)
                     command, status = socket_functions.parse_response(
                         response)
                     if not response:

@@ -2,6 +2,7 @@ import socket
 import argparse
 import socket_functions
 import rsa
+import ssl
 
 from socket_functions.constants import *
 
@@ -26,14 +27,17 @@ if __name__ == "__main__":
     print(f"Listening on: {HOST}:{args.port}")
     while True:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
-
-            server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            # Generate keys and exchange public key with client
-            publicKey, privateKey = rsa.newkeys(512)
+            sslSettings = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+            sslSettings.load_cert_chain(
+                "./certs/server-certificate.pem", keyfile="./certs/server-key.pem")
+            secure_server_socket = ssl.SSLContext.wrap_socket(
+                sslSettings, server_socket, server_side=True)
+            secure_server_socket.setsockopt(
+                socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
             # attempt connection to client
-            client_socket, client_ID, clientPublicKey = socket_functions.connect_client(
-                server_socket, args.port, connected_clients, publicKey, privateKey)
+            client_socket, client_ID = socket_functions.connect_client(
+                secure_server_socket, args.port, connected_clients)
             if client_ID == None:
                 print(f"Connection to client failed. Waiting for new connection...")
             else:
@@ -42,15 +46,15 @@ if __name__ == "__main__":
                     connected = True
                     if PRINT_VERBOSE_STATUS:
                         print(
-                            f"Connection to client {client_ID} successful.")    
-                 
+                            f"Connection to client {client_ID} successful.")
+
                     # Secure connection established, start main loop
                     if PRINT_VERBOSE_STATUS:
                         print(
                             f"Connection secured. Waiting for commands...")
                     while connected:
                         response = socket_functions.get_line(
-                            client_socket, privateKey)
+                            client_socket)
                         if not response:
                             break
                         # handle received data
@@ -77,7 +81,8 @@ if __name__ == "__main__":
                             break
 
                         # send response back to client
-                        socket_functions.send_line(client_socket, response, clientPublicKey)
+                        socket_functions.send_line(
+                            client_socket, response)
 
                     # Connection lost, remove client from connected clients list
                     socket_functions.disconnect_client(
