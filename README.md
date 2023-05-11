@@ -4,13 +4,14 @@ By Chris Cody - ID:220209093
 TCP socket server/client is a basic TCP socket server and client written in Python 3. The client and server implements my new and improved protocol for COSC310 Assessment 4. The client and server are capable of performing basic key/value store operations over an encrypted TCP socket connection.
 
 ## Protocol description
-For details of the protocol, see the [protocol description](protocol.pdf).
+For details of the protocol, see the [protocol description document](protocol.md).
 
 ## Security features
-For details of the security issues with v1 of this protocol, how they were mitigated and the security features of v2, see the [security features](security.pdf).
+For details of the security issues with v1 of this protocol, how they were mitigated and the security features of v2, see the [security features document](report.md).
 
 ## Test user accounts
 The following user accounts can be used for testing:
+
 Client id: abc
 Password: 123
 
@@ -20,10 +21,7 @@ Password: 7(a6fm^YnfPC<$5Y
 ## Installation
 Ensure you have the latest version of Python 3 installed on your machine. This should already be installed on turing but if you plan to run the client or server on another machine, Python 3 can be downloaded from https://www.python.org/downloads/
 
-This script requires the python rsa library which is already installed on turing. To install this library on another machine, please run the following command:
-```bash
-pip install rsa
-```
+This script requires several core python libraries which should all be installed by default when python is initially installed. 
 
 ## Running the server and client
 ### Using the shell script

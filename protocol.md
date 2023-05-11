@@ -3,17 +3,17 @@
 By Chris Cody - ID:220209093
 
 ## Initiating connection and encryption
-All communications between the client and server must be encrypted using an RSA 512 bit private/public key pair. On initiating a socket connection, the client should immediately transmit their public key to the server as a stream of bytes. The server will respond with their public key as a stream of bytes. Once this exchange has been completed, the client and server must encrypt all further communications using their private key prior to transmission. If the `CONNECT`ion is lost, or a client re-`CONNECT`s to the server, public keys must be exchanged again.
+All socket communications between the client and server must be encrypted using a TLS/SSL socket. 
 
 ## Protocol
-Each message in the protocol consists of an encrypted string of ASCII characters followed by the line feed character (ASCII code 10, often represented as \n in programming languages). All messages from the client and server are case sensitive and must be smaller than the RECEIVE_BUFFER_SIZE, which is currently 4096 bits
+Each message in the protocol consists of a string of ASCII characters followed by the line feed character (ASCII code 10, often represented as \n in programming languages). All messages from the client and server are case sensitive and must be smaller than the RECEIVE_BUFFER_SIZE, which is currently 4096 bits. The only exception is the hashed client password, sent as a fixed number of bits (256) and no training \n.
 
 ### CONNECT
-A client begins by sending a `CONNECT` message, which consists of the string `CONNECT`, followed by a client id, which consists of a string of any ASCII characters, terminated by a new line. The next message from the client is a stream of bytes which is the hashed password associated with this client id. The password is hashed using 100000 iterations of the sha256 algorithm and the following salt: `b'\xed\x12\x92\xc6\x86\xb4\x8a\xbf\x10\xb3bd\x1c/m\xca'`
+A client begins by establishing a TLS/SSL connection to the server and sending a `CONNECT` message. This consists of the string `CONNECT`, followed by a client id. The client id which consists of a string of any ASCII characters, terminated by a new line. The next message from the client is the hashed password for the client, sent as 256 bits with no trailing newline. The password is hashed using 100000 iterations of the sha256 algorithm and salted. The salt `b'\xed\x12\x92\xc6\x86\xb4\x8a\xbf\x10\xb3bd\x1c/m\xca'` should be used for testing but change this to a secret value in any production system.
 
 On receiving a `CONNECT` message, a server first checks if there is an existing session using the client id indicated in the `CONNECT` message. If there is, the server responds with a message consisting of `CONNECT: ERROR`, as only one client can `CONNECT` to a session at a time. Otherwise, the server starts a new session for the client, responding `CONNECT: OK` if this is completed successfully, or `CONNECT: ERROR` otherwise.
 
-If a client program receives a `CONNECT`: ERROR message, it should display an appropriate error message and exit.
+If a client program receives a `CONNECT: ERROR` message, it should display an appropriate error message and exit.
 
 ### PUT
 Once a session has been established, the client can store data in the session by sending `PUT KEY`, where `KEY` is a string of ASCII characters other than the line feed character. The next message from the client is a string of ASCII characters other than the newline character, which is the data to associate with the key.
@@ -23,7 +23,7 @@ On receiving a `PUT` message, the server waits for the associated value to be se
 ### GET
 Once a session has been established, the client can request the data associated with a given key by sending `GET KEY`, where `KEY` is a string of ASCII characters other than the line feed character.
 
-On receiving a `GET` message, the server retrieves the value associated with the given `KEY` and returns it as the next message to the client. If this is not possible for any reason (e.g., the given `KEY` does not exist in the store), the server responds `GET: ERROR` instead.
+On receiving a `GET` message, the server retrieves the value associated with the given `KEY` and calculates the CRC-32 checksum of the value. The server returns a `GET VALUE` message to the client, where `VALUE` is a string of ASCII characters other than the line feed character. The server then immediately sends a second message containing an integer representation of the checksum. If the server is not able to retrieve the key or calculate the checksum for any reason (e.g., the given `KEY` does not exist in the store), the server responds `GET: ERROR` instead.
 
 ### DELETE
 Once a session has been established, the client can request to delete data associated with a given key by sending `DELETE KEY`, where `KEY` is a string of ASCII characters other than the line feed character.

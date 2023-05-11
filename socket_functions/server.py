@@ -1,10 +1,8 @@
-import rsa
 from .common import *
 
 # for testing purposes, the following extremely secure client ID and passwords are active:
 # admin -> 7(a6fm^YnfPC<$5Y
 # abc -> 123
-
 
 users = {("admin", b'uQ\xab\xf6Q\x19\xbd(\xe5\xa8\xc2\xca\x7f\xaey\xd1\xa9\x87\x97\x15\xf9i\x17\x05W>\xe9\xb8wZ\x8b\x11'),
          ("abc", b'g\xf8F4\xe6G]\x90\xc4\xa9\x8c%\xe2\xe7\x1ay<\x87\xdc=K*\xf5n\xdf\xfcG:u@:\xea')}

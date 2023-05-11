@@ -1,4 +1,3 @@
-import rsa
 import getpass
 import hashlib
 from .common import *
@@ -15,9 +14,6 @@ def connect_server(connected_socket):
         hashed_pw = hashlib.pbkdf2_hmac(
             'sha256', client_pass.encode(), salt, 100000)
 
-        # Create socket file and connect to server
-        # socket_file = connected_socket.makefile('rw')
-        # connected_socket.send(f"CONNECT {client_ID}\n")
         send_line(connected_socket, (f"CONNECT {client_ID}"))
         connected_socket.send(hashed_pw)
         response = get_line(connected_socket)

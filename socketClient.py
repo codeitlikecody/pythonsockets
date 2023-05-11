@@ -2,10 +2,11 @@ import socket
 import argparse
 import zlib
 import socket_functions
-import rsa
 import ssl
 
 from socket_functions.constants import *
+
+SSL_CA_CERTIFICATE = "./certs/server-certificate.pem"
 
 if __name__ == "__main__":
     print(f"Client Started")
@@ -26,7 +27,7 @@ if __name__ == "__main__":
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
         try:
             sslSettings = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-            sslSettings.load_verify_locations("./certs/server-certificate.pem")
+            sslSettings.load_verify_locations(SSL_CA_CERTIFICATE)
             sslSettings.check_hostname = False
             secure_server_socket = ssl.SSLContext.wrap_socket(
                 sslSettings, server_socket, server_side=False, server_hostname=hostIP)

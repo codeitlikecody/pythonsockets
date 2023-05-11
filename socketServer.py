@@ -1,11 +1,12 @@
 import socket
 import argparse
 import socket_functions
-import rsa
 import ssl
 
 from socket_functions.constants import *
 
+SSL_CERTIFICATE = "./certs/server-certificate.pem"
+SSL_KEY = "./certs/server-key.pem"
 
 if __name__ == "__main__":
     print(f"Server Started")
@@ -28,8 +29,7 @@ if __name__ == "__main__":
     while True:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
             sslSettings = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-            sslSettings.load_cert_chain(
-                "./certs/server-certificate.pem", keyfile="./certs/server-key.pem")
+            sslSettings.load_cert_chain(SSL_CERTIFICATE, SSL_KEY)
             secure_server_socket = ssl.SSLContext.wrap_socket(
                 sslSettings, server_socket, server_side=True)
             secure_server_socket.setsockopt(
