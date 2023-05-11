@@ -1,5 +1,6 @@
 import socket
 import argparse
+import zlib
 import socket_functions
 import rsa
 import ssl
@@ -93,9 +94,23 @@ if __name__ == "__main__":
                         break
                     elif response == "PUT: ERROR" or response == "GET: ERROR" or response == "DELETE: ERROR":
                         print(f"Error completing command.")
-                    elif response == "PUT: OK" or response == "DELETE: OK" or (command == "GET" and status):
+                    elif command == "GET" and status:
+                        value, expected_crc = status.split("\n", 1)
+                        calculated_crc = zlib.crc32(value.encode())
+                        if calculated_crc == int(expected_crc):
+                            if PRINT_VERBOSE_STATUS:
+                                print(
+                                    f"GET command completed successfully. Value: {value} CRC: {expected_crc}")
+                        else:
+                            if PRINT_VERBOSE_STATUS:
+                                print(
+                                    f"GET command failed. CRC check failed.")
+                    elif response == "PUT: OK":
                         if PRINT_VERBOSE_STATUS:
-                            print(f"Command completed successfully.")
+                            print(f"PUT command completed successfully.")
+                    elif response == "PUT: OK" or response == "DELETE: OK":
+                        if PRINT_VERBOSE_STATUS:
+                            print(f"DELETE command completed successfully.")
                     else:
                         print(
                             f"Unexpected response received. Quitting...")

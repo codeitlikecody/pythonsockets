@@ -109,11 +109,12 @@ def put(key, value, database):
 # handle a GET message from client
 def get(key, database):
     try:
-        # get value from database
+        # get value from database and calculate CRC
         value = database[key]
+        crc = zlib.crc32(value.encode())
         if PRINT_VERBOSE_STATUS:
             print(f"GET '{key}': '{value}'")
-        return f"GET {value}"
+        return f"GET {value}\n{crc}"
     except:
         # key not found
         if PRINT_VERBOSE_STATUS:

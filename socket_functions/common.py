@@ -7,28 +7,10 @@ from .constants import *
 def send_line(connected_socket, message):
     try:
 
-        # send CRC
-        # crc = f"{zlib.crc32(message.encode())}"
-        # encCrc = rsa.encrypt(crc.encode(),
-        #                      publicKey)
-        # connected_socket.send(encCrc)
-
-        # send message
-        # encMessage = rsa.encrypt(message.encode(),
-        #                          publicKey)
         connected_socket.send(message.encode())
 
         if PRINT_SENT_COMMANDS:
             print(f"Sent: {message.strip()}")
-
-        # wait for CRC response
-        # crcResponse = connected_socket.recv(RECEIVE_BUFFER_SIZE)
-        # if crcResponse == zlib.crc32(message):
-        #     if PRINT_VERBOSE_STATUS:
-        #         print(f"CRC: OK")
-        # else:
-        #     print(f"CRC: ERROR")
-        #     return None
 
     except Exception as ex:
         if PRINT_VERBOSE_STATUS:
@@ -46,9 +28,6 @@ def get_line(connected_socket):
             if PRINT_RECEIVED_COMMANDS:
                 print(f"Received: {message}")
 
-            # send CRC
-            # crc = zlib.crc32(message.encode()).to_bytes(4, byteorder='big')
-            # connected_socket.send(crc)
             return message
         else:
             return None
