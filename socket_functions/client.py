@@ -1,10 +1,26 @@
 import getpass
 import hashlib
+from ssl import SSLSocket
 from .common import *
 
 
-# initiate server connection
-def connect_server(connected_socket):
+def connect_server(connected_socket: SSLSocket) -> str|None:
+    """Initiate server connection
+
+    Connects to a server and returns the server response if successful
+
+    Parameters
+    ----------
+    connected_socket : SSLSocket
+        The socket to use for the connection
+
+    Returns
+    -------
+    str
+        The server response if successful, otherwise None
+    """
+
+    response = None
 
     try:
         # Send client ID to server
@@ -22,6 +38,7 @@ def connect_server(connected_socket):
                 f"Error: Expected 'CONNECT: OK' response from server but received: {response}")
             return None
 
+    # Connection failed - handle exceptions
     except Exception as ex:
         print(
             f"Error: An {type(ex).__name__} exception occurred while connecting to server: {ex.args}")

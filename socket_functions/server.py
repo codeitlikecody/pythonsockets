@@ -1,3 +1,5 @@
+from ssl import SSLSocket
+from typing import Tuple
 from .common import *
 
 # for testing purposes, the following extremely secure client ID and passwords are active:
@@ -7,10 +9,27 @@ from .common import *
 users = {("admin", b'uQ\xab\xf6Q\x19\xbd(\xe5\xa8\xc2\xca\x7f\xaey\xd1\xa9\x87\x97\x15\xf9i\x17\x05W>\xe9\xb8wZ\x8b\x11'),
          ("abc", b'g\xf8F4\xe6G]\x90\xc4\xa9\x8c%\xe2\xe7\x1ay<\x87\xdc=K*\xf5n\xdf\xfcG:u@:\xea')}
 
-# initiate client connection
+def connect_client(server_socket: SSLSocket, port: str, connected_clients: list) -> Tuple[SSLSocket, str]:
+    """Initiate client connection
+    
+    Connects to a client and returns the client socket and ID if successful
 
+    Parameters
+    ----------
+    server_socket : SSLSocket
+        The server socket to use for the connection
+    
+    port : str
+        The port to use for the connection
 
-def connect_client(server_socket, port, connected_clients):
+    connected_clients : list
+        List of connected clients
+
+    Returns
+    -------
+    Tuple[SSLSocket, str]
+        The client socket and ID if successful, otherwise None
+    """
     client_socket = None
     try:
         # attempt connection to client
@@ -52,6 +71,7 @@ def connect_client(server_socket, port, connected_clients):
                     print(
                         f"Error client with ID: {client_ID}. No matching user/password")
 
+    # handle errors
     except ValueError as ex:
         client_ID = None
         if PRINT_VERBOSE_STATUS:
@@ -77,8 +97,23 @@ def connect_client(server_socket, port, connected_clients):
     return client_socket, client_ID
 
 
-# remove client connection
-def disconnect_client(connected_clients, client_ID):
+def disconnect_client(connected_clients: list, client_ID: str)  -> None:
+    """Remove client connection
+
+    Removes this client from the list of connected clients
+    
+    Parameters
+    ----------
+    connected_clients : list
+        List of connected clients
+
+    client_ID : str
+        Ihe ID of the client to disconnect
+
+    Returns
+    -------
+    None
+    """
     # TODO: check if we need to delete client ID if client disconnects unexpectedly
     try:
         connected_clients.remove(client_ID)
@@ -89,10 +124,26 @@ def disconnect_client(connected_clients, client_ID):
             print(
                 f"Error: Could not remove client connection record")
 
-# handle a PUT message from client
 
+def put(key: str, value: str, database: dict) -> str:
+    """Handle a PUT message from client
 
-def put(key, value, database):
+    Put a key/value pair into the database and handle any errors. Returns a fully formed PUT response  ready to send to the client.
+
+    Parameters
+    ----------
+    key : str
+        The key to store in the database
+    value : str
+        The value to store in the database
+    database : dict
+        The database to store the key/value pair in
+
+    Returns
+    -------
+    str
+        A fully formed PUT response to send to the client. Contains the OK/ERROR result of the PUT operation
+    """
     # check for valid key and value
     if key == None or value == None:
         return "PUT: ERROR"
@@ -104,8 +155,24 @@ def put(key, value, database):
     return "PUT: OK"
 
 
-# handle a GET message from client
-def get(key, database):
+def get(key: str, database: dict) -> str:
+    """Handle a GET message from client
+    
+    Get a value from the database and handle any errors. Returns a fully formed GET response ready to send to the client.
+
+    Parameters
+    ----------
+    key : str
+        The key to search for in the database
+    database : dict
+        The database to get the key from
+
+    Returns
+    -------
+    str
+        A fully formed GET response to send to the client. Contains the value stored in teh given key and CRC or an error message if the key is not found
+
+    """
     try:
         # get value from database and calculate CRC
         value = database[key]
@@ -120,8 +187,23 @@ def get(key, database):
         return "GET: ERROR"
 
 
-# handle a DELETE message from client
-def delete(key, database):
+def delete(key: str, database: dict) -> str:
+    """Handle a DELETE message from client
+
+    Delete the specified key from the database and handle any errors. Returns a fully formed DELETE response ready to send to the client.
+
+    Parameters
+    ----------
+    key : str
+        The key to delete from the database
+    database : dict
+        The database to delete the key from
+
+    Returns
+    -------
+    str
+        A fully formed GET response to send to the client. Contains the result of the DELETE operation
+    """
     try:
         # delete value from database
         database.pop(key)
@@ -129,7 +211,8 @@ def delete(key, database):
             print(f"DELETE '{key}'")
         return "DELETE: OK"
     except:
-        # key not found
+        # key not found - the key is not in the database.
         if PRINT_VERBOSE_STATUS:
-            print(f"Error: could not DELETE '{key}', key not found")
-        return "DELETE: ERROR"
+            print(f"Could not DELETE '{key}', key not found.")
+        # as the key doesn't exist, we can return OK
+        return "DELETE: OK"

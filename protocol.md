@@ -28,12 +28,12 @@ On receiving a `GET` message, the server retrieves the value associated with the
 ### DELETE
 Once a session has been established, the client can request to delete data associated with a given key by sending `DELETE KEY`, where `KEY` is a string of ASCII characters other than the line feed character.
 
-On receiving a `DELETE` message, the server deletes the `KEY` and associated value from its store, if it exists, and responds `DELETE: OK`. If, for any reason, the key and associated value remain in the store, the server must respond `DELETE: ERROR`.
+On receiving a `DELETE` message, the server deletes the `KEY` and associated value from its store if it exists. If the 'KEY' was deleted or does not exist in the store, the server responds `DELETE: OK`. If, for any reason, the key and associated value remain in the store, the server must respond `DELETE: ERROR`.
 
 ### DISCONNECT
 Once a session with a server has been established, the client can destroy the session by sending `DISCONNECT`.
 
-The server removes all traces of the session from its system and responds `DISCONNECT: OK`.
+The server ends the active session and responds `DISCONNECT: OK`.
 
 ### Other messages
 Other than the initial sharing of public keys and the above listed commands, any other message sent to or from the client is considered an error, and should result in the receiving party dropping the connection. In such a case, the server should remove all data associated with the client from its system.

@@ -1,10 +1,25 @@
+from ssl import SSLSocket
 import rsa
 import zlib
 from .constants import *
 
 
-# send message to connected server or client
-def send_line(connected_socket, message):
+def send_line(connected_socket: SSLSocket, message: str) -> None:
+    """Send a line of text to a connected socket
+    
+    Parameters
+    ----------
+    connected_socket : SSLSocket
+        The socket to send the message to
+    
+    message : str
+        The message to send
+
+    Returns
+    -------
+    None
+    """
+
     try:
 
         connected_socket.send(message.encode())
@@ -19,8 +34,20 @@ def send_line(connected_socket, message):
         return None
 
 
-# receive message from connected server or client
-def get_line(connected_socket):
+def get_line(connected_socket: SSLSocket) -> str|None:
+    """Receive a line of text from a connected socket
+
+    Parameters
+    ----------
+    connected_socket : SSLSocket
+        The socket to receive the message from
+
+    Returns
+    -------
+    str
+        The received message if successful, otherwise None
+    """
+
     try:
         message = connected_socket.recv(RECEIVE_BUFFER_SIZE).decode()
         if message:
@@ -31,6 +58,8 @@ def get_line(connected_socket):
             return message
         else:
             return None
+        
+    # Connection closed by server - handle exceptions
     except Exception as ex:
         if PRINT_VERBOSE_STATUS:
             print(
@@ -38,8 +67,20 @@ def get_line(connected_socket):
         return None
 
 
-# receive a command/key pair from the connected client
-def parse_response(response):
+def parse_response(response: str) -> str|None:
+    """Parse a response from a connected socket
+
+    Parameters
+    ----------
+    response : str
+        The response to parse
+
+    Returns
+    -------
+    str
+        The command if successful, otherwise None
+    """
+
     try:
         command, key = response.split(" ", 1)
         if PRINT_VERBOSE_STATUS:
